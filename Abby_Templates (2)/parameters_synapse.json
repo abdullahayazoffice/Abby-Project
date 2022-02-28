@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "value": "https://csb100320016196a9081.blob.core.windows.net/parent-template"
+        },
+        "workspaces_abbydevdwhsynapse_name": {
+            "value": "abbydevdwhsynapse001"
+        }
+    }
+}

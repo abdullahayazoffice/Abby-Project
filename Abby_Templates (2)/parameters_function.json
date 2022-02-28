@@ -1,0 +1,13 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "functionapp-name": {
+            "value": "abby-dev-datafunction"
+        },
+        "serverfarms-externalid": {
+            "value": "/subscriptions/f7e9f264-fd74-4ac1-8d07-28da8420d8e5/resourceGroups/az2-abby-dev-dataanalytics-rsg/providers/Microsoft.Web/serverfarms/abby-dev-asp"
+        }
+
+    }
+}

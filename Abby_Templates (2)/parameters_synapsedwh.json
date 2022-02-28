@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "sqlPoolName": {
+            "value": "az2abbydevasdwh001"
+        },
+        "sku": {
+            "value": "DW100c"
+        },
+        "location": {
+            "value": "eastus2"
+        },
+        "workspaceName": {
+            "value": "az2abbydevdwhsynapse001"
+        },
+        "metadataSync": {
+            "value": false
+        },
+        "tags": {
+            "value": {
+                "Created On": "01/13/2022",
+                "Environment": "DEV",
+                "Owner": "VSI",
+                "Project": "ABBY",
+                "Team": "Data & Reporting",
+                "application": "DWH"
+            }
+        }
+    }
+}

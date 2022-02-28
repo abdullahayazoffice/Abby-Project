@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "abby-datafactory-dev"
+        },
+        "version": {
+            "value": "V2"
+        },
+        "location": {
+            "value": "eastus2"
+        },
+        "vNetEnabled": {
+            "value": false
+        },
+        "publicNetworkAccess": {
+            "value": true
+        },
+        "gitConfigureLater": {
+            "value": true
+        },
+        "userAssignedIdentitiesStr": {
+            "value": "{\"type\": \"SystemAssigned,UserAssigned\", \"userAssignedIdentities\": {\"\": {}}}"
+        },
+        "enableCMK": {
+            "value": false
+        }
+    }
+}

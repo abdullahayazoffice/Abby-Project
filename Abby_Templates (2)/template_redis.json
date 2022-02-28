@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "redis-name": {
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Cache/Redis",
+            "apiVersion": "2020-12-01",
+            "name": "[parameters('redis-name')]",
+            "location": "East US 2",
+            "properties": {
+                "redisVersion": "4.0.14",
+                "sku": {
+                    "name": "Basic",
+                    "family": "C",
+                    "capacity": 0
+                },
+                "enableNonSslPort": false,
+                "publicNetworkAccess": "Enabled"
+                
+            }
+        },
+		{
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2019-10-01",
+          "name": "linkedDataFactory",
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/template_datafactory.json",
+              "contentVersion": "1.0.0.0"
+            },
+            "parametersLink":{
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/parameters_datafactory.json",
+              "contentVersion": "1.0.0.0"
+          }
+          }
+        }
+    ]
+}

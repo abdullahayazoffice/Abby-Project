@@ -1,0 +1,115 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "systemtopic-event-name": {
+            "type": "string"
+        },
+        "storageaccount-externalid": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.EventGrid/systemTopics",
+            "apiVersion": "2021-12-01",
+            "name": "[parameters('systemtopic-event-name')]",
+            "location": "eastus2",
+            "tags": {
+                "Created On": "12/8/2021",
+                "Environment": "DEV",
+                "Owner": "VSI",
+                "Project": "ABBY",
+                "Team": "Data & Reporting"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "source": "[parameters('storageaccount-externalid')]",
+                "topicType": "Microsoft.Storage.StorageAccounts"
+            }
+        },
+        {
+            "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+            "apiVersion": "2021-12-01",
+            "name": "[concat(parameters('systemtopic-event-name'), '/blobcreationevent1')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', parameters('systemtopic-event-name'))]"
+            ],
+            "properties": {
+                "destination": {
+                    "properties": {
+                        "resourceId": "[parameters('storageaccount-externalid')]",
+                        "queueName": "abby-dev-queue",
+                        "queueMessageTimeToLiveInSeconds": 604800
+                    },
+                    "endpointType": "StorageQueue"
+                },
+                "filter": {
+                    "subjectBeginsWith": "/blobServices/default/containers/abby-dynamics365-financeandoperations/blobs/abby-d365-sit.sandbox.operations.dynamics.com/Tables/Common/Customer/Main/CustTable",
+                    "includedEventTypes": [
+                        "Microsoft.Storage.BlobCreated"
+                    ],
+                    "enableAdvancedFilteringOnArrays": true
+                },
+                "labels": [],
+                "eventDeliverySchema": "EventGridSchema",
+                "retryPolicy": {
+                    "maxDeliveryAttempts": 30,
+                    "eventTimeToLiveInMinutes": 1440
+                }
+            }
+        },
+        {
+            "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+            "apiVersion": "2021-12-01",
+            "name": "[concat(parameters('systemtopic-event-name'), '/stage-event')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', parameters('systemtopic-event-name'))]"
+            ],
+            "properties": {
+                "destination": {
+                    "properties": {
+                        "resourceId": "[parameters('storageaccount-externalid')]",
+                        "queueName": "abby-dev-queue",
+                        "queueMessageTimeToLiveInSeconds": 604800
+                    },
+                    "endpointType": "StorageQueue"
+                },
+                "filter": {
+                    "includedEventTypes": [
+                        "Microsoft.Storage.BlobCreated",
+                        "Microsoft.Storage.BlobDeleted",
+                        "Microsoft.Storage.DirectoryCreated"
+                    ],
+                    "enableAdvancedFilteringOnArrays": true
+                },
+                "labels": [],
+                "eventDeliverySchema": "EventGridSchema",
+                "retryPolicy": {
+                    "maxDeliveryAttempts": 30,
+                    "eventTimeToLiveInMinutes": 1440
+                }
+            }
+        },
+		{
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2019-10-01",
+          "name": "linkedDataBricksTemplate",
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/data_bricks_temp.json",
+              "contentVersion": "1.0.0.0"
+            },
+            "parametersLink":{
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/data_bricks_params.json",
+              "contentVersion": "1.0.0.0"
+          }
+          }
+        }
+	
+    ]
+}

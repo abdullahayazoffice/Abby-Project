@@ -1,0 +1,169 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "securestring"
+        },
+        "workspaces_abbydevdwhsynapse_name": {
+            "type": "string"
+        }
+    },
+
+    "variables": {},
+
+    "resources": [
+        {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "2021-06-01",
+            "name": "[parameters('workspaces_abbydevdwhsynapse_name')]",
+            "location": "eastus2",
+            "tags": {
+                "Created On": "12/7/2021",
+                "Environment": "DEV",
+                "Owner": "VSI",
+                "Project": "ABBY",
+                "Team": "Data & Reporting"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "defaultDataLakeStorage": {
+                    "resourceId": "/subscriptions/f7e9f264-fd74-4ac1-8d07-28da8420d8e5/resourceGroups/az2-abby-dev-dataanalytics-rsg/providers/Microsoft.Storage/storageAccounts/abbydevdatalakest18533",
+                    "accountUrl": "https://abbydevdatalakest18533.dfs.core.windows.net",
+                    "filesystem": "az2abbydevdlfilesystem"
+                },
+                "encryption": {},
+                "managedVirtualNetwork": "default",
+                "connectivityEndpoints": {
+                    "web": "[concat('https://web.azuresynapse.net?workspace=%2fsubscriptions%2ff7e9f264-fd74-4ac1-8d07-28da8420d8e5%2fresourceGroups%2faz2-abby-dev-dataanalytics-rsg%2fproviders%2fMicrosoft.Synapse%2fworkspaces%2f', parameters('workspaces_abbydevdwhsynapse_name'))]",
+                    "dev": "[concat('https://', parameters('workspaces_abbydevdwhsynapse_name'), '.dev.azuresynapse.net')]",
+                    "sqlOnDemand": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '-ondemand.sql.azuresynapse.net')]",
+                    "sql": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '.sql.azuresynapse.net')]"
+                },
+                "managedResourceGroupName": "synapseworkspace-managedrg-90bfb9d9-6209-4756-9a55-62ab2e0720e2",
+                "sqlAdministratorLogin": "sqladminuser",
+                "privateEndpointConnections": [],
+                "managedVirtualNetworkSettings": {
+                    "preventDataExfiltration": false
+                },
+                "publicNetworkAccess": "Enabled",
+                "cspWorkspaceAdminProperties": {
+                    "initialWorkspaceAdminObjectId": "65b3d936-ec54-41de-9ca5-f7353a05806c"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/auditingSettings",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/extendedAuditingSettings",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/firewallRules",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/allowAll')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/integrationruntimes",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/AutoResolveIntegrationRuntime')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]"
+            ],
+            "properties": {
+                "type": "Managed",
+                "typeProperties": {
+                    "computeProperties": {
+                        "location": "AutoResolve"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+         {
+            "type": "Microsoft.Synapse/workspaces/vulnerabilityAssessments",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('workspaces_abbydevdwhsynapse_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('workspaces_abbydevdwhsynapse_name'))]",
+                "[resourceId('Microsoft.Synapse/workspaces/securityAlertPolicies', parameters('workspaces_abbydevdwhsynapse_name'), 'Default')]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
+            }
+        },
+			{
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2019-10-01",
+          "name": "linkedASPServerFarmTemplate",
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/template_ASP_DA.json",
+              "contentVersion": "1.0.0.0"
+            },
+            "parametersLink":{
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/parameters_ASP_DA.json",
+              "contentVersion": "1.0.0.0"
+          }
+          }
+        }
+    ]
+}

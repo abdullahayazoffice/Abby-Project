@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_ASP_name": {
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-02-01",
+            "name": "[parameters('serverfarms_ASP_name')]",
+            "location": "East US 2",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+		{
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2019-10-01",
+          "name": "linkedFunctionAppTemplate",
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/template_function.json",
+              "contentVersion": "1.0.0.0"
+            },
+            "parametersLink":{
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/parameters_function.json",
+              "contentVersion": "1.0.0.0"
+          }
+          }
+        }
+    ]
+}

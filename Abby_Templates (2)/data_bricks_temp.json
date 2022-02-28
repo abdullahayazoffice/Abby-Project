@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "workspaceName": {
+            "type": "string"
+        },
+        "tier": {
+            "type": "string"
+        },
+        "tagValues": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "managedResourceGroupName": "[concat('databricks-rg-', parameters('workspaceName'), '-', uniqueString(parameters('workspaceName'), resourceGroup().id))]",
+        "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-04-01",
+            "location": "[parameters('location')]",
+            "name": "[parameters('workspaceName')]",
+            "sku": {
+                "name": "[parameters('tier')]"
+            },
+            "comments": "Please do not use an existing resource group for ManagedResourceGroupId.",
+            "properties": {
+                "ManagedResourceGroupId": "[variables('managedResourceGroupId')]",
+                "parameters": {}
+            },
+            "type": "Microsoft.Databricks/workspaces",
+            "dependsOn": [],
+            "tags": "[parameters('tagValues')]"
+        },
+		 {
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2019-10-01",
+          "name": "linkedCacheTemplate",
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/template_redis.json",
+              "contentVersion": "1.0.0.0"
+            },
+            "parametersLink":{
+              "uri": "https://csb100320016196a9081.blob.core.windows.net/parent-template/parameters_redis.json",
+              "contentVersion": "1.0.0.0"
+          }
+          }
+        }
+
+    ]
+}
